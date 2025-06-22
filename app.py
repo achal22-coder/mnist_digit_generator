@@ -30,8 +30,12 @@ class Generator(nn.Module):
 # Load generator
 device = torch.device("cpu")
 generator = Generator()
-generator.load_state_dict(torch.load("generator.pth", map_location=device))
-generator.eval()
+try:
+    generator.load_state_dict(torch.load("generator.pth", map_location=device))
+    generator.eval()
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+    st.stop()
 
 # Streamlit App UI
 st.title("Handwritten Digit Image Generator")
@@ -46,4 +50,4 @@ if st.button("Generate Images"):
 
     grid = make_grid(imgs, nrow=5, normalize=True)
     npimg = grid.numpy()
-    st.image(np.transpose(npimg, (1, 2, 0)), caption=[f"Sample {i+1}" for i in range(5)])
+    st.image(np.transpose(npimg, (1, 2, 0)), caption=f"Generated Digit: {digit}")
